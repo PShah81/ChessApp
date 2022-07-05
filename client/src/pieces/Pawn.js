@@ -1,6 +1,7 @@
 import {useState, useRef, useEffect} from 'react';
 import imageBlack from '../images/BlackPawn.png';
 import imageWhite from '../images/WhitePawn.png';
+import "../style/Pawn.css";
 function Pawn(props){
     const [clicked, setClicked] = useState(false)
     const imgRef = useRef();
@@ -14,6 +15,7 @@ function Pawn(props){
     {
         e.target.style.cursor = "grabbing";
         e.preventDefault();
+        imgRef.current.style.zIndex = "2";
         if(clicked === false)
         {
             setClicked(true);
@@ -24,7 +26,8 @@ function Pawn(props){
     function handleMouseRelease(e)
     {
         e.preventDefault();
-        e.target.style.cursor = "grab"
+        e.target.style.cursor = "grab";
+        imgRef.current.style.zIndex = "0";
         imgRef.current.removeEventListener('mousemove', handleMouseMove);
         imgRef.current.removeEventListener('mouseup', handleMouseRelease);
         setClicked(false);
@@ -65,7 +68,7 @@ function Pawn(props){
         }
     }
     return(
-            <img draggable="true" ref={imgRef} onMouseEnter={handleHover} onMouseDown={handleMouseDown} style={{height: '6vw', width: '6vw', position: 'absolute'}}src={image} alt='pawn'/>
+            <img className = "Img" draggable="true" ref={imgRef} onMouseEnter={handleHover} onMouseDown={handleMouseDown}src={image} alt='pawn'/>
     )
 };
 export default Pawn

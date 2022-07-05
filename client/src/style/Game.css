@@ -1,0 +1,19 @@
+.Square{
+    height: 100%;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.Row{
+    display: flex; 
+    flex-direction: row;
+    height: 12.5%;
+}
+
+.Board{
+    border-style: solid;
+    height: 100%;
+}
