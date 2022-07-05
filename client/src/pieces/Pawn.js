@@ -33,7 +33,13 @@ function Pawn(props){
         {
             return;
         }
-        props.moveMade({x: e.clientX -20, y: e.clientY-20}, 'Pawn', props.loc)
+        let originalLocation = props.moveMade({x: e.clientX -20, y: e.clientY-20}, 'Pawn', props.loc, props.color);
+        if(originalLocation !== undefined)
+        {
+            imgRef.current.style.left = originalLocation.x + 'px';
+            imgRef.current.style.top = originalLocation.y  + 'px';
+        }
+
     }
     function handleMouseMove(e)
     {
