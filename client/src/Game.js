@@ -1,4 +1,5 @@
 import Pawn from './pieces/Pawn.js';
+import Bishop from './pieces/Bishop.js';
 import React, {useEffect, useState, useRef} from 'react';
 import './style/Game.css';
 function Game(props){
@@ -29,13 +30,41 @@ function Game(props){
                 color = 'black';
                 loc = alphabetArray[i-8]+'7';
             }
-            piecesArr.push({type: 'Pawn', key: i, loc: loc, color: color})
+            piecesArr.push({type: 'Pawn', key: 'Pawn' + i, loc: loc, color: color})
+        }
+        for(let i=0; i<4; i++)
+        {
+            let color;
+            let loc;
+            if(i<2)
+            {
+                color = 'white';
+                if(i%2 === 1)
+                {
+                    loc = 'c1';
+                }
+                else
+                {
+                    loc = 'f1';
+                }
+                
+            }
+            else
+            {
+                color = 'black';
+                if(i%2 === 1)
+                {
+                    loc = 'c8';
+                }
+                else
+                {
+                    loc = 'f8';
+                }
+                
+            }
+            piecesArr.push({type: 'Bishop', key: 'Bishop' + i, loc: loc, color: color})
         }
         return piecesArr;
-    }
-    function findLocationOfSquare(location)
-    {
-       return boardArrRef.current[alphabetArray.indexOf(location[0]) + 8*(parseInt(location[1])-1)].getBoundingClientRect();
     }
     function moveMade(coords,pieceType, pieceLocation, pieceColor)
     {
@@ -56,11 +85,11 @@ function Game(props){
         let valid = validateMove(pieceType, pieceLocation, nearestDivKey, pieceColor);
         if(!valid)
         {
-            return findLocationOfSquare(pieceLocation)
+            return true;
         }
         else
         {
-            return;
+            return false;
         }
     }
 
@@ -68,7 +97,28 @@ function Game(props){
     {
         let typeOfMove;
         let pieceCaptured;
-        let moveValid = false;
+        let moveValid = true;
+        let captureMove = false;
+        let capturelessMove = false;
+        let differenceX;
+        if(pieceColor === "black")
+        {
+            differenceX = alphabetArray.indexOf(pieceLocationEnd[0]) - alphabetArray.indexOf(pieceLocationStart[0])
+        } 
+        else{
+            differenceX = alphabetArray.indexOf(pieceLocationStart[0]) - alphabetArray.indexOf(pieceLocationEnd[0])
+        }
+        
+        let differenceY;
+        if(pieceColor === "black")
+        {
+            differenceY = parseInt(pieceLocationStart[1])- parseInt(pieceLocationEnd[1])
+        } 
+        else{
+            differenceY = parseInt(pieceLocationEnd[1])- parseInt(pieceLocationStart[1])
+        }
+
+
         if(pieceColor !== turn)
         {
             return false;
@@ -80,49 +130,38 @@ function Game(props){
         switch (pieceType) {
             case 'Pawn':
                 //still have to check if move leaves king checked
-                let difference;
-                let take = false;
-                let straightMove = false;
-                if(pieceColor === "black")
+                if(Math.abs(differenceX) === 1 && differenceY === 1)
                 {
-                    difference = parseInt(pieceLocationStart[1])- parseInt(pieceLocationEnd[1])
-                } 
-                else{
-                    difference = parseInt(pieceLocationEnd[1])- parseInt(pieceLocationStart[1])
-                }
-                if(Math.abs(alphabetArray.indexOf(pieceLocationStart[0]) - alphabetArray.indexOf(pieceLocationEnd[0])) === 1 && difference === 1)
-                {
-                    take = true;
+                    captureMove = true;
                 }
                 //test if the move is going straight and if moving 2 squares is valid
-                else if(pieceLocationStart[0] === pieceLocationEnd[0])
+                else if(differenceX === 0)
                 {
-                    if(pieceColor === "black" && difference === 2 && pieceLocationStart[1] !== "7")
+                    if(pieceColor === "black" && differenceY === 2 && pieceLocationStart[1] !== "7")
                     {
                         break;
                     }
-                    else if(pieceColor === "white" && difference === 2 && pieceLocationStart[1] !== "2")
+                    else if(pieceColor === "white" && differenceY === 2 && pieceLocationStart[1] !== "2")
                     { 
                         break;
                     }
-                    else if(difference>2 || difference < 0)
+                    else if(differenceY>2 || differenceY < 0)
                     {
                         break;
                     }
-                    straightMove = true
+                    capturelessMove = true
                 }
-                
-                let straightMoveValid = true;
                 let wasPieceCaptured = false;
                 for(let i=0; i<piecesInPlay.length; i++)
                 {
                     //piece to be captured
                     //check for en pessant
-                    if(take && piecesInPlay[i].loc === pieceLocationEnd)
+                    if(captureMove && piecesInPlay[i].loc === pieceLocationEnd)
                     {
                         if(piecesInPlay[i].color === pieceColor)
                         {
                             console.log("same color");
+                            moveValid = false;
                             break;
                         }
                         else
@@ -130,60 +169,146 @@ function Game(props){
                             console.log("valid capture")
                             wasPieceCaptured = true;
                             pieceCaptured = piecesInPlay[i];
-                            moveValid = true;
-                            typeOfMove = "take";
+                            typeOfMove = "captureMove";
                             break;
                         }
                     }
                     //piece in the way of movement
-                    else if(straightMove)
+                    else if(capturelessMove)
                     {
                         //find the square in the middle of start and end in case of a 2 move 
                         if(pieceColor=== "black")
                         {
-                            if(difference === 1 && piecesInPlay[i].loc === pieceLocationEnd)
+                            if(differenceY === 1 && piecesInPlay[i].loc === pieceLocationEnd)
                             {
                                 console.log("piece in the way");
-                                straightMoveValid = false;
+                                moveValid = false;
                                 break;
                             }
-                            else if(difference === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) + 1)))
+                            else if(differenceY === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) + 1)))
                             {
                                 console.log("piece in the way");
-                                straightMoveValid = false;
+                                moveValid = false;
                                 break;
                             }
                         }
                         else 
                         {
-                            if(difference === 1 && piecesInPlay[i].loc === pieceLocationEnd)
+                            if(differenceY === 1 && piecesInPlay[i].loc === pieceLocationEnd)
                             {
                                 console.log("piece in the way");
-                                straightMoveValid = false;
+                                moveValid = false;
                                 break;
                             }
-                            else if(difference === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) - 1)))
+                            else if(differenceY === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) - 1)))
                             {
                                 console.log("piece in the way");
-                                straightMoveValid = false;
+                                moveValid = false;
                                 break;
                             }
                         }
                     }
                 }
-                if(straightMoveValid && straightMove)
+                if(moveValid && capturelessMove)
                 {
-                    moveValid = true;
-                    typeOfMove = "straight";
+                    typeOfMove = "capturelessMove";
                 }
                 //en passant
-                // if(take && !wasPieceCaptured &&)
-                // {
-                //     let file = pieceLocationEnd[0];
+                if(captureMove && !wasPieceCaptured)
+                {
+                    let capturedPieceLoc;
+                    if(pieceColor === "black")
+                    {
+                       capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])+1)
+                    }
+                    else
+                    {
+                        capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])-1)
+                    }
+                    console.log(capturedPieceLoc)
+                    for(let i=0; i<piecesInPlay.length; i++)
+                    {
+                        if(piecesInPlay[i].loc === capturedPieceLoc)
+                        {
+                            let key;
+                            if(pieceColor === "black")
+                            {
+                                key = "w"
+                            }
+                            else
+                            {
+                                key = "b"
+                            }
+                            if(moves[moves.length-1][key] === "P" + capturedPieceLoc)
+                            {
+                                let notATwoMove = false;
+                                for(let i=0; i<moves.length; i++)
+                                {
+                                    if(moves[i][key] === pieceLocationEnd)
+                                    {
+                                        notATwoMove = true;
+                                    }
+
+                                }
+                                if(notATwoMove === false)
+                                {
+                                    pieceCaptured = piecesInPlay[i];
+                                    typeOfMove = "captureMove";
+                                }
+                            }
+                            
+                        }
+                    }
                     
-                // }
+                }
+                if(pieceCaptured === undefined && captureMove)
+                {
+                    moveValid = false;
+                }
                 break;
-        
+            case 'Bishop':
+                if(Math.abs(differenceX) === Math.abs(differenceY))
+                {
+                    //in accordance with board where black is at the bottom and squares are loaded starting at the top left
+                    if(pieceColor === "black")
+                    {
+                        differenceY *= -1
+                    }
+                    else if (pieceColor === "white")
+                    {
+                        differenceX *= -1
+                    }
+                    let unitsX = differenceX / Math.abs(differenceX);
+                    let unitsY = differenceY / Math.abs(differenceY);
+                    for(let i=1; i<(Math.abs(differenceX) + 1); i++)
+                    {
+                        let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + (parseInt(pieceLocationStart[1]) + i*unitsY)
+                        console.log(stringLocation)
+                        for(let j=0; j<piecesInPlay.length; j++)
+                        {
+                            if(piecesInPlay[j].loc === pieceLocationEnd)
+                            {
+                                captureMove = true;
+                                typeOfMove = "captureMove";
+                                pieceCaptured = piecesInPlay[j];
+                            }
+                            else if(piecesInPlay[j].loc === stringLocation)
+                            {
+                                moveValid = false;
+                            }
+                        }
+                    }
+                    if(moveValid && !captureMove)
+                    {
+                        capturelessMove = true;
+                        typeOfMove = "capturelessMove";
+                    }
+                }
+                else
+                {
+                    moveValid = false;
+                }
+                break;
             default:
                 break;
         }
@@ -206,7 +331,7 @@ function Game(props){
     {
         let notationObject = {Pawn: "P", Bishop: "B", Knight: "N", Queen: "Q", King: "K", Rook: "R"}
         let notation = "";
-        notation += notationObject[pieceType] + (typeOfMove === "take" ? "X" : "") + pieceLocationEnd
+        notation += notationObject[pieceType] + (typeOfMove === "captureMove" ? "X" : "") + pieceLocationEnd
         return notation;
     }
     function processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove)
@@ -253,7 +378,7 @@ function Game(props){
             setMoves(newMovesArr)
         }
         console.log(moves)
-        if(typeOfMove === "take")
+        if(typeOfMove === "captureMove")
         {
             let newPiecesInPlay = [];
             let piece;
@@ -275,7 +400,7 @@ function Game(props){
             }
             setPiecesInPlay(newPiecesInPlay)
         }
-        else if(typeOfMove === "straight")
+        else if(typeOfMove === "capturelessMove")
         {
             setPiecesInPlay(piecesInPlay.map((piece)=>{
                 if(pieceType === piece.type && pieceLocationStart === piece.loc)
@@ -311,6 +436,10 @@ function Game(props){
                     if(piece.type === 'Pawn')
                     {
                         potentialPiece = <Pawn key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                    }
+                    else if(piece.type === 'Bishop')
+                    {
+                        potentialPiece = <Bishop key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
                     }
                 }
                }

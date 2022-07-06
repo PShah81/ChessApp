@@ -1,7 +1,7 @@
-import {useState, useRef, useEffect} from 'react';
+import {useState, useRef} from 'react';
 import imageBlack from '../images/BlackPawn.png';
 import imageWhite from '../images/WhitePawn.png';
-import "../style/Pawn.css";
+import "../style/Pieces.css";
 function Pawn(props){
     const [clicked, setClicked] = useState(false)
     const imgRef = useRef();
@@ -37,10 +37,10 @@ function Pawn(props){
             return;
         }
         let originalLocation = props.moveMade({x: e.clientX -20, y: e.clientY-20}, 'Pawn', props.loc, props.color);
-        if(originalLocation !== undefined)
+        if(originalLocation)
         {
-            imgRef.current.style.left = originalLocation.x + 'px';
-            imgRef.current.style.top = originalLocation.y  + 'px';
+            imgRef.current.style.removeProperty('left');
+            imgRef.current.style.removeProperty('top');
         }
 
     }
@@ -52,7 +52,6 @@ function Pawn(props){
         if(e.clientX < 0.25*document.documentElement.clientWidth || e.clientX > 0.75*document.documentElement.clientWidth  || 
             e.clientY < 0 || e.clientY > document.documentElement.clientWidth * 0.5)
         {
-            console.log('stopped')
             return;
         }
         imgRef.current.style.left = e.clientX - 20 + 'px';
