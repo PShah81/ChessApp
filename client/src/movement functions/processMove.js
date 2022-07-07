@@ -1,4 +1,5 @@
-    function processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay)
+    import {simulateMove} from './simulateMove.js';
+    function processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion)
     {
         //still have to check for stalemate
         //still have to check for checkmate
@@ -6,7 +7,6 @@
         console.log(notation);
         let blackKing;
         let whiteKing;
-        let newPiecesInPlay = [];
         for(let i=0; i<piecesInPlay.length; i++)
         {
             if(piecesInPlay[i].type === "King")
@@ -21,38 +21,13 @@
                 }
             }
         }
-        if(typeOfMove === "captureMove")
-        {
-            let piece;
-            for(let i=0; i< piecesInPlay.length; i++)
-            {
-                piece = piecesInPlay[i];
-                if(pieceType === piece.type && pieceLocationStart === piece.loc)
-                {
-                    newPiecesInPlay.push({...piece, loc: pieceLocationEnd})
-                }
-                else if(pieceCaptured.type === piece.type && pieceCaptured.loc === piece.loc && pieceCaptured.key === piece.key)
-                {
-                    
-                }
-                else
-                {
-                    newPiecesInPlay.push({...piece})
-                }
-            }
-        }
-        else if(typeOfMove === "capturelessMove")
-        {
-            newPiecesInPlay = piecesInPlay.map((piece)=>{
-                if(pieceType === piece.type && pieceLocationStart === piece.loc)
-                {
-                    return {...piece, loc: pieceLocationEnd}
-                }
-                return {...piece}
-            })
-        }
+        let newPiecesInPlay = simulateMove(typeOfMove,piecesInPlay,pieceType,pieceLocationEnd,pieceLocationStart, pieceCaptured, promotion);
         setPiecesInPlay(newPiecesInPlay);
         let checkArr = checkForChecks(newPiecesInPlay,blackKing, whiteKing, alphabetArray);
+        if(promotion)
+        {
+            notation += "=Q"
+        }
         if(checkArr[0] && turn === "white")
         {
             console.log('error')

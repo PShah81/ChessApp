@@ -1,3 +1,6 @@
+import {simulateMove} from './simulateMove.js';
+import {checkForChecks} from './processMove.js';
+import {leavingKingCheckedCheck} from './leavingKingCheckedCheck.js';
 function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColor,alphabetArray, turn, piecesInPlay, moves, processMove, setTurn, setMoves, setPiecesInPlay)
     {
         let typeOfMove;
@@ -6,6 +9,7 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
         let captureMove = false;
         let capturelessMove = false;
         let differenceX;
+        let promotion = false;
         if(pieceColor === "black")
         {
             differenceX = alphabetArray.indexOf(pieceLocationEnd[0]) - alphabetArray.indexOf(pieceLocationStart[0])
@@ -79,7 +83,6 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                         }
                         else
                         {
-                            console.log("valid capture")
                             wasPieceCaptured = true;
                             pieceCaptured = piecesInPlay[i];
                             typeOfMove = "captureMove";
@@ -175,6 +178,12 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                 {
                     moveValid = false;
                 }
+                //check for promotion
+                if((pieceLocationEnd[1] === '8' && pieceColor === 'white') || (pieceLocationEnd[1] === '1' && pieceColor === 'black'))
+                {
+                    promotion = true;
+                    console.log('promotion!')
+                }
                 break;
             case 'Bishop':
                 if(Math.abs(differenceX) === Math.abs(differenceY))
@@ -251,8 +260,7 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                     {
                         capturelessMove = true;
                         typeOfMove = "capturelessMove";
-                    }
-                    
+                    }              
                 }
                 else
                 {
@@ -343,7 +351,9 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                             typeOfMove = "capturelessMove";
                         }
                     }
+
                 }
+
                 break;
             case 'Queen':
                 if(pieceColor === "black")
@@ -500,7 +510,14 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
         }
         if(moveValid)
         {
-            processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay)
+            if(leavingKingCheckedCheck(typeOfMove, piecesInPlay, pieceType, pieceLocationEnd, pieceLocationStart, pieceCaptured, checkForChecks, simulateMove, alphabetArray, turn, promotion))
+            {
+                moveValid = false;
+            }
+        }
+        if(moveValid)
+        {
+            processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion)
             return true;
         }
         else
