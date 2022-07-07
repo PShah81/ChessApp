@@ -1,5 +1,9 @@
 import Pawn from './pieces/Pawn.js';
 import Bishop from './pieces/Bishop.js';
+import Knight from './pieces/Knight.js';
+import Rook from './pieces/Rook.js';
+import Queen from './pieces/Queen.js';
+import King from './pieces/King.js';
 import React, {useEffect, useState, useRef} from 'react';
 import './style/Game.css';
 import {validateMove} from './movement functions/validateMove.js';
@@ -66,6 +70,74 @@ function Game(props){
             }
             piecesArr.push({type: 'Bishop', key: 'Bishop' + i, loc: loc, color: color})
         }
+        for(let i=0; i<4; i++)
+        {
+            let color;
+            let loc;
+            if(i<2)
+            {
+                color = 'white';
+                if(i%2 === 1)
+                {
+                    loc = 'b1';
+                }
+                else
+                {
+                    loc = 'g1';
+                }
+                
+            }
+            else
+            {
+                color = 'black';
+                if(i%2 === 1)
+                {
+                    loc = 'b8';
+                }
+                else
+                {
+                    loc = 'g8';
+                }
+                
+            }
+            piecesArr.push({type: 'Knight', key: 'Knight' + i, loc: loc, color: color})
+        }
+        for(let i=0; i<4; i++)
+        {
+            let color;
+            let loc;
+            if(i<2)
+            {
+                color = 'white';
+                if(i%2 === 1)
+                {
+                    loc = 'a1';
+                }
+                else
+                {
+                    loc = 'h1';
+                }
+                
+            }
+            else
+            {
+                color = 'black';
+                if(i%2 === 1)
+                {
+                    loc = 'a8';
+                }
+                else
+                {
+                    loc = 'h8';
+                }
+                
+            }
+            piecesArr.push({type: 'Rook', key: 'Rook' + i, loc: loc, color: color})
+        }
+        piecesArr.push({type: 'Queen', key: 'Queen1', loc: 'd8', color: "black"});
+        piecesArr.push({type: 'Queen', key: 'Queen2', loc: 'd1', color: "white"});
+        piecesArr.push({type: 'King', key: 'King1', loc: 'e8', color: "black"});
+        piecesArr.push({type: 'King', key: 'King2', loc: 'e1', color: "white"});
         return piecesArr;
     }
     function moveMade(coords,pieceType, pieceLocation, pieceColor)
@@ -123,6 +195,22 @@ function Game(props){
                     else if(piece.type === 'Bishop')
                     {
                         potentialPiece = <Bishop key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                    }
+                    else if(piece.type === 'Knight')
+                    {
+                        potentialPiece = <Knight key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                    }
+                    else if(piece.type === "Rook")
+                    {
+                        potentialPiece = <Rook key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                    }
+                    else if(piece.type === "Queen")
+                    {
+                        potentialPiece = <Queen key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                    }
+                    else if(piece.type === "King")
+                    {
+                        potentialPiece = <King key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
                     }
                 }
                }

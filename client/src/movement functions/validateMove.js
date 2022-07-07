@@ -23,7 +23,8 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
             differenceY = parseInt(pieceLocationEnd[1])- parseInt(pieceLocationStart[1])
         }
 
-
+        let unitsX;
+        let unitsY;
         if(pieceColor !== turn)
         {
             return false;
@@ -58,6 +59,10 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                         break;
                     }
                     capturelessMove = true
+                }
+                else
+                {
+                    moveValid = false;
                 }
                 let wasPieceCaptured = false;
                 for(let i=0; i<piecesInPlay.length; i++)
@@ -125,27 +130,25 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                 if(captureMove && !wasPieceCaptured)
                 {
                     let capturedPieceLoc;
+                    let key;
                     if(pieceColor === "black")
                     {
-                       capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])+1)
+                       capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])+1);
+                       key = "w"
                     }
                     else
                     {
-                        capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])-1)
+                        capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])-1);
+                        key = "b"
                     }
                     for(let i=0; i<piecesInPlay.length; i++)
                     {
+                        if(moves.length === 0)
+                        {
+                            break;
+                        }
                         if(piecesInPlay[i].loc === capturedPieceLoc)
                         {
-                            let key;
-                            if(pieceColor === "black")
-                            {
-                                key = "w"
-                            }
-                            else
-                            {
-                                key = "b"
-                            }
                             if(moves[moves.length-1][key] === "P" + capturedPieceLoc)
                             {
                                 let notATwoMove = false;
@@ -185,23 +188,299 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                     {
                         differenceX *= -1
                     }
-                    let unitsX = differenceX / Math.abs(differenceX);
-                    let unitsY = differenceY / Math.abs(differenceY);
+                    unitsX = differenceX / Math.abs(differenceX);
+                    unitsY = differenceY / Math.abs(differenceY);
                     for(let i=1; i<(Math.abs(differenceX) + 1); i++)
                     {
                         let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + (parseInt(pieceLocationStart[1]) + i*unitsY)
+                        console.log(stringLocation);
+                        for(let j=0; j<piecesInPlay.length; j++)
+                        {
+                            if(piecesInPlay[j].loc === pieceLocationEnd)
+                            {
+                                if(piecesInPlay[j].color === pieceColor)
+                                {
+                                    moveValid = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    captureMove = true;
+                                    typeOfMove = "captureMove";
+                                    pieceCaptured = piecesInPlay[j];
+                                }
+                            }
+                            else if(piecesInPlay[j].loc === stringLocation)
+                            {
+                                moveValid = false;
+                            }
+                        }
+                    }
+                    if(moveValid && !captureMove)
+                    {
+                        capturelessMove = true;
+                        typeOfMove = "capturelessMove";
+                    }
+                }
+                else
+                {
+                    moveValid = false;
+                }
+                break;
+            case "Knight":
+                if((Math.abs(differenceX) === 2 && Math.abs(differenceY) === 1 )||(Math.abs(differenceX) === 1 && Math.abs(differenceY) === 2 ))
+                {
+                    for(let i=0; i<piecesInPlay.length; i++)
+                    {
+                        if(piecesInPlay[i].loc === pieceLocationEnd)
+                        {
+                            if(piecesInPlay[i].color === pieceColor)
+                            {
+                                moveValid = false;
+                                break;
+                            }
+                            else
+                            {
+                                captureMove = true;
+                                typeOfMove = "captureMove";
+                                pieceCaptured = piecesInPlay[i];
+                            }
+                        }
+                    }
+                    if(!captureMove)
+                    {
+                        capturelessMove = true;
+                        typeOfMove = "capturelessMove";
+                    }
+                    
+                }
+                else
+                {
+                    moveValid = false;
+                }
+                break;
+            case 'Rook':
+                if(pieceColor === "black")
+                {
+                    differenceY *= -1
+                }
+                else if (pieceColor === "white")
+                {
+                    differenceX *= -1
+                }
+                unitsX = differenceX / Math.abs(differenceX);
+                unitsY = differenceY / Math.abs(differenceY);
+                if(Math.abs(differenceX) > 0 && Math.abs(differenceY) > 0)
+                {
+                    moveValid = false;
+                }
+                else
+                {
+                    if(Math.abs(differenceY) > 0)
+                    {
+                        for(let i=1; i<(Math.abs(differenceY) + 1); i++)
+                        {
+                            let stringLocation = pieceLocationStart[0] + (parseInt(pieceLocationStart[1]) + i*unitsY)
+                            for(let j=0; j<piecesInPlay.length; j++)
+                            {
+                                if(piecesInPlay[j].loc === pieceLocationEnd)
+                                {
+                                    if(piecesInPlay[j].color === pieceColor)
+                                    {
+                                        moveValid = false;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        captureMove = true;
+                                        typeOfMove = "captureMove";
+                                        pieceCaptured = piecesInPlay[j];
+                                    }
+                                }
+                                else if(piecesInPlay[j].loc === stringLocation)
+                                {
+                                    moveValid = false;
+                                }
+                            }
+                        }
+                        if(moveValid && !captureMove)
+                        {
+                            capturelessMove = true;
+                            typeOfMove = "capturelessMove";
+                        }
+                    }
+                    else if(Math.abs(differenceX) > 0)
+                    {
+                        for(let i=1; i<(Math.abs(differenceX) + 1); i++)
+                        {
+                            let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + pieceLocationStart[1]
+                            console.log(stringLocation)
+                            for(let j=0; j<piecesInPlay.length; j++)
+                            {
+                                if(piecesInPlay[j].loc === pieceLocationEnd)
+                                {
+                                    if(piecesInPlay[j].color === pieceColor)
+                                    {
+                                        moveValid = false;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        captureMove = true;
+                                        typeOfMove = "captureMove";
+                                        pieceCaptured = piecesInPlay[j];
+                                    }
+                                }
+                                else if(piecesInPlay[j].loc === stringLocation)
+                                {
+                                    moveValid = false;
+                                }
+                            }
+                        }
+                        if(moveValid && !captureMove)
+                        {
+                            capturelessMove = true;
+                            typeOfMove = "capturelessMove";
+                        }
+                    }
+                }
+                break;
+            case 'Queen':
+                if(pieceColor === "black")
+                {
+                    differenceY *= -1
+                }
+                else if (pieceColor === "white")
+                {
+                    differenceX *= -1
+                }
+                unitsX = differenceX / Math.abs(differenceX);
+                unitsY = differenceY / Math.abs(differenceY);
+                if(Math.abs(differenceX) > 0 && Math.abs(differenceY)>0)
+                {
+                    if(Math.abs(differenceX) === Math.abs(differenceY))
+                    {
+                        for(let i=1; i<(Math.abs(differenceX) + 1); i++)
+                        {
+                            let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + (parseInt(pieceLocationStart[1]) + i*unitsY)
+                            for(let j=0; j<piecesInPlay.length; j++)
+                            {
+                                if(piecesInPlay[j].loc === pieceLocationEnd)
+                                {
+                                    if(piecesInPlay[j].color === pieceColor)
+                                    {
+                                        moveValid = false;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        captureMove = true;
+                                        typeOfMove = "captureMove";
+                                        pieceCaptured = piecesInPlay[j];
+                                    }
+                                }
+                                else if(piecesInPlay[j].loc === stringLocation)
+                                {
+                                    moveValid = false;
+                                }
+                            }
+                        }
+                        if(moveValid && !captureMove)
+                        {
+                            capturelessMove = true;
+                            typeOfMove = "capturelessMove";
+                        }
+                    }
+                    else
+                    {
+                        moveValid = false;
+                    }
+                }
+                else if(Math.abs(differenceY) > 0)
+                {
+                    for(let i=1; i<(Math.abs(differenceY) + 1); i++)
+                    {
+                        let stringLocation = pieceLocationStart[0] + (parseInt(pieceLocationStart[1]) + i*unitsY)
+                        for(let j=0; j<piecesInPlay.length; j++)
+                        {
+                            if(piecesInPlay[j].loc === pieceLocationEnd)
+                            {
+                                if(piecesInPlay[j].color === pieceColor)
+                                {
+                                    moveValid = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    captureMove = true;
+                                    typeOfMove = "captureMove";
+                                    pieceCaptured = piecesInPlay[j];
+                                }
+                            }
+                            else if(piecesInPlay[j].loc === stringLocation)
+                            {
+                                moveValid = false;
+                            }
+                        }
+                    }
+                    if(moveValid && !captureMove)
+                    {
+                        capturelessMove = true;
+                        typeOfMove = "capturelessMove";
+                    }
+                }
+                else if (Math.abs(differenceX) > 0)
+                {
+                    for(let i=1; i<(Math.abs(differenceX) + 1); i++)
+                    {
+                        let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + pieceLocationStart[1]
                         console.log(stringLocation)
                         for(let j=0; j<piecesInPlay.length; j++)
                         {
                             if(piecesInPlay[j].loc === pieceLocationEnd)
                             {
-                                captureMove = true;
-                                typeOfMove = "captureMove";
-                                pieceCaptured = piecesInPlay[j];
+                                if(piecesInPlay[j].color === pieceColor)
+                                {
+                                    moveValid = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    captureMove = true;
+                                    typeOfMove = "captureMove";
+                                    pieceCaptured = piecesInPlay[j];
+                                }
                             }
                             else if(piecesInPlay[j].loc === stringLocation)
                             {
                                 moveValid = false;
+                            }
+                        }
+                    }
+                    if(moveValid && !captureMove)
+                    {
+                        capturelessMove = true;
+                        typeOfMove = "capturelessMove";
+                    }
+                }
+                break;
+            case 'King':
+                if((Math.abs(differenceX) <= 1 && Math.abs(differenceY) <= 1))
+                {
+                    for(let i=0; i<piecesInPlay.length; i++)
+                    {
+                        if(piecesInPlay[i].loc === pieceLocationEnd)
+                        {
+                            if(piecesInPlay[i].color === pieceColor)
+                            {
+                                moveValid = false;
+                                break;
+                            }
+                            else
+                            {
+                                captureMove = true;
+                                typeOfMove = "captureMove";
+                                pieceCaptured = piecesInPlay[i];
                             }
                         }
                     }
@@ -221,7 +500,7 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
         }
         if(moveValid)
         {
-            processMove(pieceType,pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay)
+            processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay)
             return true;
         }
         else
