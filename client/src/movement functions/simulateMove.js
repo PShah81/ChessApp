@@ -1,4 +1,4 @@
-function simulateMove(typeOfMove, piecesInPlay, pieceType, pieceLocationEnd, pieceLocationStart, pieceCaptured, promotion)
+function simulateMove(typeOfMove, piecesInPlay, pieceType, pieceLocationEnd, pieceLocationStart, pieceCaptured, promotion, alphabetArray)
 {
     let newPiecesInPlay = [];
     if(typeOfMove === "captureMove")
@@ -31,28 +31,41 @@ function simulateMove(typeOfMove, piecesInPlay, pieceType, pieceLocationEnd, pie
             return {...piece}
         })
     }
+    else if(typeOfMove === "kingsideCastle")
+    {
+        newPiecesInPlay = piecesInPlay.map((piece)=>{
+            if(pieceType === piece.type && pieceLocationStart === piece.loc)
+            {
+                return {...piece, loc: pieceLocationEnd}
+            }
+            if(piece.key === "h"+pieceLocationStart[1]+"Rook")
+            {
+                return {...piece, loc: alphabetArray[alphabetArray.indexOf(piece.loc[0]) + 2] + piece.loc[1]}
+            }
+            return {...piece}
+        })
+    }
+    else if(typeOfMove === "queensideCastle")
+    {
+        newPiecesInPlay = piecesInPlay.map((piece)=>{
+            if(pieceType === piece.type && pieceLocationStart === piece.loc)
+            {
+                return {...piece, loc: pieceLocationEnd}
+            }
+            if(piece.key === "a"+pieceLocationStart[1]+"Rook")
+            {
+                return {...piece, loc: alphabetArray[alphabetArray.indexOf(piece.loc[0]) - 3] + piece.loc[1]}
+            }
+            return {...piece}
+        })
+    }
 
     if(promotion)
     {
-        let latestQueenKey;
-        for(let i=0; i<newPiecesInPlay.length; i++)
-        {
-            if(newPiecesInPlay[i].type === "Queen")
-            {
-                if(latestQueenKey === undefined)
-                {
-                    latestQueenKey = newPiecesInPlay[i].key
-                }
-                if(newPiecesInPlay[i].key > latestQueenKey)
-                {
-                    latestQueenKey = newPiecesInPlay[i].key
-                }
-            }
-        }
         newPiecesInPlay = newPiecesInPlay.map((piece)=>{
             if(pieceType === piece.type && pieceLocationEnd === piece.loc)
             {
-                return {...piece, type: 'Queen', key: 'Queen' + (parseInt(latestQueenKey[latestQueenKey.length - 1]) + 1)}
+                return {...piece, type: 'Queen', key: 'promotedQueen' + piece.key}
             }
             return {...piece}
         })

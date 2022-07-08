@@ -36,7 +36,7 @@ function Game(props){
                 color = 'black';
                 loc = alphabetArray[i-8]+'7';
             }
-            piecesArr.push({type: 'Pawn', key: 'Pawn' + i, loc: loc, color: color})
+            piecesArr.push({type: 'Pawn', key: loc + 'Pawn', loc: loc, color: color})
         }
         for(let i=0; i<4; i++)
         {
@@ -68,7 +68,7 @@ function Game(props){
                 }
                 
             }
-            piecesArr.push({type: 'Bishop', key: 'Bishop' + i, loc: loc, color: color})
+            piecesArr.push({type: 'Bishop', key: loc + 'Bishop', loc: loc, color: color})
         }
         for(let i=0; i<4; i++)
         {
@@ -100,7 +100,7 @@ function Game(props){
                 }
                 
             }
-            piecesArr.push({type: 'Knight', key: 'Knight' + i, loc: loc, color: color})
+            piecesArr.push({type: 'Knight', key: loc + 'Knight', loc: loc, color: color})
         }
         for(let i=0; i<4; i++)
         {
@@ -132,12 +132,12 @@ function Game(props){
                 }
                 
             }
-            piecesArr.push({type: 'Rook', key: 'Rook' + i, loc: loc, color: color})
+            piecesArr.push({type: 'Rook', key: loc + 'Rook', loc: loc, color: color})
         }
-        piecesArr.push({type: 'Queen', key: 'Queen1', loc: 'd8', color: "black"});
-        piecesArr.push({type: 'Queen', key: 'Queen2', loc: 'd1', color: "white"});
-        piecesArr.push({type: 'King', key: 'King1', loc: 'e8', color: "black"});
-        piecesArr.push({type: 'King', key: 'King2', loc: 'e1', color: "white"});
+        piecesArr.push({type: 'Queen', key: 'd8Queen', loc: 'd8', color: "black"});
+        piecesArr.push({type: 'Queen', key: 'd1Queen', loc: 'd1', color: "white"});
+        piecesArr.push({type: 'King', key: 'e8King', loc: 'e8', color: "black"});
+        piecesArr.push({type: 'King', key: 'e1King', loc: 'e1', color: "white"});
         return piecesArr;
     }
     function moveMade(coords,pieceType, pieceLocation, pieceColor)
@@ -156,14 +156,15 @@ function Game(props){
                 nearestDivKey = boardArr[row].props.children[col].key
             }
         }
-        let valid = validateMove(pieceType, pieceLocation, nearestDivKey, pieceColor, 
+        let {moveValid, typeOfMove, pieceCaptured, promotion} = validateMove(pieceType, pieceLocation, nearestDivKey, pieceColor, 
             alphabetArray, turn, piecesInPlay, moves, processMove, setTurn, setMoves, setPiecesInPlay);
-        if(!valid)
+        if(!moveValid)
         {
             return true;
         }
         else
         {
+            processMove(pieceType, pieceLocation, nearestDivKey, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion);
             return false;
         }
     }
