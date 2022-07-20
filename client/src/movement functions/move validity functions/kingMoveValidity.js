@@ -42,16 +42,6 @@ function kingMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
         let squaresToCheck;
         let modifiedKingLocation;
 
-        if(pieceColor === "black")
-        {
-            differenceY *= -1
-        }
-        else if (pieceColor === "white")
-        {
-            differenceX *= -1
-        }
-
-
         let unitsX = differenceX/Math.abs(differenceX);
         let unitsY = differenceY/Math.abs(differenceY);
         //this time checking if a check is being given
@@ -64,7 +54,8 @@ function kingMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
         }
         if(differenceX === -2)
         {
-            squaresToCheck = (alphabetArray.indexOf(king.loc[0]) - 0) + 1;
+            //threatened square rule only appies to king
+            squaresToCheck = (alphabetArray.indexOf(king.loc[0]) - 1) + 1;
             for(let i=0; i<(squaresToCheck); i++)
             {
                 modifiedKingLocation = alphabetArray[alphabetArray.indexOf(king.loc[0]) + unitsX*i] + king.loc[1];
@@ -90,7 +81,8 @@ function kingMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
         }
         else if(differenceX === 2)
         {
-            squaresToCheck = (7 - alphabetArray.indexOf(king.loc[0])) + 1
+            //threatened square rule only appies to king
+            squaresToCheck = (5 - alphabetArray.indexOf(king.loc[0])) + 1
             for(let i=0; i<(squaresToCheck); i++)
             {
                 modifiedKingLocation = alphabetArray[alphabetArray.indexOf(king.loc[0]) + unitsX*i] + king.loc[1];
@@ -121,8 +113,6 @@ function kingMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
         moveValid = false;
         return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured};
     }
-    console.log(moveValid)
-    console.log(typeOfMove)
     return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured};
 }
 

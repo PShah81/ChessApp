@@ -6,15 +6,7 @@ function queenMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLo
     let captureMove = false;
     let capturelessMove = false;
     let stringLocation;
-
-    if(pieceColor === "black")
-    {
-        differenceY *= -1
-    }
-    else if (pieceColor === "white")
-    {
-        differenceX *= -1
-    }
+    
     let unitsX = differenceX / Math.abs(differenceX);
     let unitsY = differenceY / Math.abs(differenceY);
     if(Math.abs(differenceX) > 0 && Math.abs(differenceY)>0)
@@ -99,6 +91,7 @@ function queenMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLo
         {
             let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + pieceLocationStart[1]
             console.log(stringLocation)
+            console.log(pieceLocationEnd)
             for(let j=0; j<piecesInPlay.length; j++)
             {
                 if(piecesInPlay[j].loc === pieceLocationEnd)

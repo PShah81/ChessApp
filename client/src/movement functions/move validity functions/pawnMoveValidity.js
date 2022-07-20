@@ -7,14 +7,23 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
     let captureMove = false;
     let capturelessMove = false;
     //still have to check if move leaves king checked
-    if(Math.abs(differenceX) === 1 && differenceY === 1)
+    if(Math.abs(differenceX) === 1)
     {
-        captureMove = true;
+        if((pieceColor === "black" && differenceY === -1 )|| (pieceColor === "white" && differenceY === 1))
+        {
+            captureMove = true;
+        }
+        else
+        {
+            moveValid = false;
+            return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
+        }
+        
     }
     //test if the move is going straight and if moving 2 squares is valid
     else if(differenceX === 0)
     {
-        if(pieceColor === "black" && differenceY === 2 && pieceLocationStart[1] !== "7")
+        if(pieceColor === "black" && differenceY === -2 && pieceLocationStart[1] !== "7")
         {
             moveValid = false;
             return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
@@ -24,7 +33,12 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
             moveValid = false;
             return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
         }
-        else if(differenceY>2 || differenceY < 0)
+        else if(pieceColor === "black" && (differenceY < - 2 || differenceY > -1))
+        {
+            moveValid = false;
+            return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
+        }
+        else if(pieceColor === "white" && (differenceY > 2 || differenceY < 1))
         {
             moveValid = false;
             return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
@@ -45,7 +59,6 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
         {
             if(piecesInPlay[i].color === pieceColor)
             {
-                console.log("same color");
                 moveValid = false;
                 return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
             }
@@ -63,15 +76,13 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
             //find the square in the middle of start and end in case of a 2 move 
             if(pieceColor=== "black")
             {
-                if(differenceY === 1 && piecesInPlay[i].loc === pieceLocationEnd)
+                if(differenceY === -1 && piecesInPlay[i].loc === pieceLocationEnd)
                 {
-                    console.log("piece in the way");
                     moveValid = false;
                     return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
                 }
-                else if(differenceY === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) + 1)))
+                else if(differenceY === -2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) + 1)))
                 {
-                    console.log("piece in the way");
                     moveValid = false;
                     return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
                 }
@@ -80,13 +91,11 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
             {
                 if(differenceY === 1 && piecesInPlay[i].loc === pieceLocationEnd)
                 {
-                    console.log("piece in the way");
                     moveValid = false;
                     return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
                 }
                 else if(differenceY === 2 && (piecesInPlay[i].loc === pieceLocationEnd ||  piecesInPlay[i].loc === pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1]) - 1)))
                 {
-                    console.log("piece in the way");
                     moveValid = false;
                     return {moveValid: moveValid, typeOfMove: typeOfMove, pieceCaptured: pieceCaptured, promotion: promotion};
                 }
@@ -101,16 +110,16 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
     if(captureMove && !wasPieceCaptured)
     {
         let capturedPieceLoc;
-        let key;
+        let color;
         if(pieceColor === "black")
         {
            capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])+1);
-           key = "w"
+           color = "w"
         }
         else
         {
             capturedPieceLoc = pieceLocationEnd[0] + (parseInt(pieceLocationEnd[1])-1);
-            key = "b"
+            color = "b"
         }
         for(let i=0; i<piecesInPlay.length; i++)
         {
@@ -120,12 +129,12 @@ function pawnMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
             }
             if(piecesInPlay[i].loc === capturedPieceLoc)
             {
-                if(moves[moves.length-1][key] === "P" + capturedPieceLoc)
+                if(moves[moves.length-1][color].notation === "P" + capturedPieceLoc)
                 {
                     let notATwoMove = false;
                     for(let i=0; i<moves.length; i++)
                     {
-                        if(moves[i][key] === pieceLocationEnd)
+                        if(moves[i][color].notation === pieceLocationEnd)
                         {
                             notATwoMove = true;
                         }

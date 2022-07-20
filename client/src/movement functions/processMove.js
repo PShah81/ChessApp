@@ -1,12 +1,15 @@
     import { checkForCheckmate } from './checkForCheckmate.js';
+import { checkForStalemate } from './checkForStalemate.js';
     import {simulateMove} from './simulateMove.js';
-    function processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion)
+    function processMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion, listOfPositions, setListOfPositions, setGameOver)
     {
         //still have to check for stalemate
         //still have to check for checkmate
         let notation = notate(pieceType, pieceLocationEnd, typeOfMove);
         let pieceKey;
         let piece;
+        let checkmate = false;
+        let stalemate = false;
         for(let i=0; i<piecesInPlay.length; i++)
         {
             piece = piecesInPlay[i];
@@ -26,15 +29,45 @@
         }
         let newPiecesInPlay = simulateMove(typeOfMove,piecesInPlay,pieceType,pieceLocationEnd,pieceLocationStart, pieceCaptured, promotion, alphabetArray);
         setPiecesInPlay(newPiecesInPlay);
+        let positionsArr = listOfPositions.map((pos)=>{
+            return pos
+        });
+        positionsArr.push(newPiecesInPlay);
+        setListOfPositions(positionsArr);
+
         let checkArr = checkForChecks(newPiecesInPlay, king, alphabetArray);
         if(promotion)
         {
             notation += "=Q"
         }
-        else if(checkArr[0])
+        if(typeOfMove === "kingsideCastle")
         {
-            // checkForCheckmate(checkArr[2], blackKing, whiteKing, piecesInPlay, alphabetArray, turn, moves)
-            notation += '+';
+            notation = "O-O";
+        }
+        if(typeOfMove === "queensideCastle")
+        {
+            notation = "O-O-O";
+        }
+        if(checkArr[0])
+        {
+            checkmate = checkForCheckmate(newPiecesInPlay, alphabetArray, turn, moves);
+            if(checkmate)
+            {
+                notation += "#";
+                setGameOver(true);
+            }
+            else
+            {
+                notation += '+';
+            }   
+        }
+        if(!checkmate)
+        {
+            stalemate = checkForStalemate(piecesInPlay, alphabetArray, turn, moves, positionsArr);
+            if(stalemate)
+            {
+                setGameOver(true);
+            }
         }
 
         if(turn === "white")
@@ -74,103 +107,50 @@
         //MAKE SURE PIECESINPLAY UPDATES WITH MOVE
         //start with black king
 
-
-        if(king.color === "black")
-        {
-            let blackKingFile = king.loc[0];
-            let blackKingRank = king.loc[1];
-            let downDistanceBlack = 8 - parseInt(blackKingRank);
-            let upDistanceBlack = parseInt(blackKingRank) - 1;
-            let leftDistanceBlack = alphabetArray.indexOf(blackKingFile) ;
-            let rightDistanceBlack = 7 - alphabetArray.indexOf(blackKingFile);
-            let blackKingCheck = false;
-            let blackCheckArr = [];
-            let blackPieceChecking;
+            let kingFile = king.loc[0];
+            let kingRank = king.loc[1];
+            let kingColor = king.color
+            let downDistance = 8 - parseInt(kingRank);
+            let upDistance = parseInt(kingRank) - 1;
+            let leftDistance = alphabetArray.indexOf(kingFile);
+            let rightDistance = 7 - alphabetArray.indexOf(kingFile);
+            let kingCheck = false;
+            let checkArr = [];
+            let pieceChecking;
 
 
-            blackCheckArr.push(checkVerticalForChecks("down", "black", downDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkVerticalForChecks("up", "black", upDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkHorizontalForChecks("right", "black", rightDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkHorizontalForChecks("left", "black", leftDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkDiagonalsForChecks("up", "right", "black", (upDistanceBlack > rightDistanceBlack)? rightDistanceBlack : upDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkDiagonalsForChecks("down", "right", "black", (downDistanceBlack > rightDistanceBlack)? rightDistanceBlack : downDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkDiagonalsForChecks("up", "left", "black", (upDistanceBlack > leftDistanceBlack)? leftDistanceBlack: upDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkDiagonalsForChecks("down", "left", "black", (downDistanceBlack > leftDistanceBlack)? leftDistanceBlack: downDistanceBlack, blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
-            blackCheckArr.push(checkKnightForChecks("black", blackKingFile, blackKingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkVerticalForChecks("down", kingColor, downDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkVerticalForChecks("up", kingColor, upDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkHorizontalForChecks("right", kingColor, rightDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkHorizontalForChecks("left", kingColor, leftDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkDiagonalsForChecks("up", "right", kingColor, (upDistance > rightDistance)? rightDistance : upDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkDiagonalsForChecks("down", "right", kingColor, (downDistance > rightDistance)? rightDistance : downDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkDiagonalsForChecks("up", "left", kingColor, (upDistance > leftDistance)? leftDistance: upDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkDiagonalsForChecks("down", "left", kingColor, (downDistance > leftDistance)? leftDistance: downDistance, kingFile, kingRank, piecesInPlay, alphabetArray))
+            checkArr.push(checkKnightForChecks(kingColor, kingFile, kingRank, piecesInPlay, alphabetArray))
 
-            for(let i=0; i<blackCheckArr.length; i++)
+            for(let i=0; i<checkArr.length; i++)
             {
-                if(blackCheckArr[i].check === true)
+                if(checkArr[i].check === true)
                 {
-                    blackKingCheck = true;
-                    blackPieceChecking = blackCheckArr[i].pieceChecking;
+                    kingCheck = true;
+                    pieceChecking = checkArr[i].pieceChecking;
                 }
             }
-            return [blackKingCheck, blackPieceChecking];
-        }
-        
-        if(king.color === "white")
-        {
-            let whiteKingFile = king.loc[0];
-            let whiteKingRank = king.loc[1];
-            let downDistanceWhite = parseInt(whiteKingRank) - 1;
-            let upDistanceWhite = 8 - parseInt(whiteKingRank);
-            let leftDistanceWhite = 7 - alphabetArray.indexOf(whiteKingFile);
-            let rightDistanceWhite = alphabetArray.indexOf(whiteKingFile);
-            let whiteKingCheck = false;
-            let whiteCheckArr = [];
-            let whitePieceChecking;
 
-
-            whiteCheckArr.push(checkVerticalForChecks("down", "white", downDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkVerticalForChecks("up", "white", upDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkHorizontalForChecks("right", "white", rightDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkHorizontalForChecks("left", "white", leftDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkDiagonalsForChecks("up", "right", "white", (upDistanceWhite > rightDistanceWhite)? rightDistanceWhite : upDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkDiagonalsForChecks("down", "right", "white", (downDistanceWhite > rightDistanceWhite)? rightDistanceWhite : downDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkDiagonalsForChecks("up", "left", "white", (upDistanceWhite > leftDistanceWhite)? leftDistanceWhite: upDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkDiagonalsForChecks("down", "left", "white", (downDistanceWhite > leftDistanceWhite)? leftDistanceWhite: downDistanceWhite, whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
-            whiteCheckArr.push(checkKnightForChecks("white", whiteKingFile, whiteKingRank, piecesInPlay, alphabetArray))
+            return [kingCheck, pieceChecking]
             
-            for(let i=0; i<whiteCheckArr.length; i++)
-            {
-                if(whiteCheckArr[i].check === true)
-                {
-                    whiteKingCheck = true;
-                    whitePieceChecking = whiteCheckArr[i].pieceChecking;
-                }
-            }
-            return [whiteKingCheck, whitePieceChecking];
-        }
     }
     function checkVerticalForChecks(direction, kingColor, squaresToCheck, kingFile, kingRank, piecesInPlay, alphabetArray)
     {
-        let multiplier;
+        let multiplier = 1;
         let getOutOfLoop = false;
         let kingCheck = false;
         let stringLocation;
         let pieceChecking;
         if(direction === "up")
         {
-            if(kingColor === "black")
-            {
-                multiplier = -1;
-            }
-            else
-            {
-                multiplier = 1;
-            }
-        }
-        else if(direction === "down")
-        {
-            if(kingColor === "black")
-            {
-                multiplier = 1;
-            }
-            else
-            {
-                multiplier = -1;
-            }
+            multiplier = -1
         }
         for(let i=1; i<squaresToCheck+1; i++)
         {
@@ -208,32 +188,14 @@
     }
     function checkHorizontalForChecks(direction, kingColor, squaresToCheck, kingFile, kingRank, piecesInPlay, alphabetArray)
     {
-        let multiplier;
+        let multiplier = 1;
         let getOutOfLoop = false;
         let kingCheck = false;
         let stringLocation;
         let pieceChecking;
-        if(direction === "right")
+        if(direction === "left")
         {
-            if(kingColor === "black")
-            {
-                multiplier = 1;
-            }
-            else
-            {
-                multiplier = -1;
-            }
-        }
-        else if(direction === "left")
-        {
-            if(kingColor === "black")
-            {
-                multiplier = -1;
-            }
-            else
-            {
-                multiplier = 1;
-            }
+            multiplier = -1;
         }
         for(let i=1; i<squaresToCheck+1; i++)
         {
@@ -267,60 +229,25 @@
                 break;
             }
         }
-        return {checK: kingCheck, pieceChecking: pieceChecking};
+        return {check: kingCheck, pieceChecking: pieceChecking};
     }
     function checkDiagonalsForChecks(directionY, directionX, kingColor, squaresToCheck, kingFile, kingRank, piecesInPlay, alphabetArray)
     {
         let stringLocation;
-        let xMultiplier;
-        let yMultiplier;
+        let xMultiplier = 1;
+        let yMultiplier = 1;
         let getOutOfLoop;
         let kingCheck;
         let pieceChecking;
-        if(directionX === "right")
+        if(directionX === "left")
         {
-            if(kingColor === "black")
-            {
-                xMultiplier = 1;
-            }
-            else
-            {
-                xMultiplier = -1;
-            }
-        }
-        else if(directionX === "left")
-        {
-            if(kingColor === "black")
-            {
-                xMultiplier = -1;
-            }
-            else
-            {
-                xMultiplier = 1;
-            }
+            xMultiplier = -1;
         }
         if(directionY === "up")
         {
-            if(kingColor === "black")
-            {
-                yMultiplier = -1;
-            }
-            else
-            {
-                yMultiplier = 1;
-            }
+            yMultiplier = -1;
         }
-        else if(directionY === "down")
-        {
-            if(kingColor === "black")
-            {
-                yMultiplier = 1;
-            }
-            else
-            {
-                yMultiplier = -1;
-            }
-        }
+       
         for(let i=1; i<squaresToCheck+1; i++)
         {
             stringLocation = alphabetArray[alphabetArray.indexOf(kingFile) + xMultiplier*i] + (parseInt(kingRank) + yMultiplier*i);

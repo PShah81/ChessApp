@@ -12,25 +12,14 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
         let typeOfMove;
         let pieceCaptured;
         let moveValid = true;
-        let differenceX;
         let promotion = false;
         let objectOfVals;
-        if(pieceColor === "black")
-        {
-            differenceX = alphabetArray.indexOf(pieceLocationEnd[0]) - alphabetArray.indexOf(pieceLocationStart[0])
-        } 
-        else{
-            differenceX = alphabetArray.indexOf(pieceLocationStart[0]) - alphabetArray.indexOf(pieceLocationEnd[0])
-        }
-        
+
+        let differenceX;
         let differenceY;
-        if(pieceColor === "black")
-        {
-            differenceY = parseInt(pieceLocationStart[1])- parseInt(pieceLocationEnd[1])
-        } 
-        else{
-            differenceY = parseInt(pieceLocationEnd[1])- parseInt(pieceLocationStart[1])
-        }
+        differenceX = alphabetArray.indexOf(pieceLocationEnd[0]) - alphabetArray.indexOf(pieceLocationStart[0])
+        differenceY = parseInt(pieceLocationEnd[1])- parseInt(pieceLocationStart[1])
+        
         
         if(pieceColor !== turn)
         {
@@ -73,7 +62,6 @@ function validateMove(pieceType, pieceLocationStart, pieceLocationEnd, pieceColo
                 pieceCaptured = objectOfVals.pieceCaptured;
                 break;
             case 'King':
-                console.log(alphabetArray)
                 objectOfVals = kingMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLocationEnd, pieceColor, piecesInPlay, moves, alphabetArray);
                 moveValid = objectOfVals.moveValid;
                 typeOfMove = objectOfVals.typeOfMove;

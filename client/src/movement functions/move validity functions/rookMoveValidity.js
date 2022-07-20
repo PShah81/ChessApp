@@ -7,14 +7,6 @@ function rookMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
     let capturelessMove = false;
     let stringLocation;
 
-    if(pieceColor === "black")
-    {
-        differenceY *= -1
-    }
-    else if (pieceColor === "white")
-    {
-        differenceX *= -1
-    }
     let unitsX = differenceX / Math.abs(differenceX);
     let unitsY = differenceY / Math.abs(differenceY);
     if(Math.abs(differenceX) > 0 && Math.abs(differenceY) > 0)
@@ -63,7 +55,6 @@ function rookMoveValidity(differenceX, differenceY, pieceLocationStart, pieceLoc
             for(let i=1; i<(Math.abs(differenceX) + 1); i++)
             {
                 let stringLocation = alphabetArray[alphabetArray.indexOf(pieceLocationStart[0]) + unitsX*i] + pieceLocationStart[1]
-                console.log(stringLocation)
                 for(let j=0; j<piecesInPlay.length; j++)
                 {
                     if(piecesInPlay[j].loc === pieceLocationEnd)

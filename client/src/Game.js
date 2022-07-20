@@ -15,6 +15,8 @@ function Game(props){
     const [moves, setMoves] = useState([])
     const [piecesInPlay, setPiecesInPlay] = useState(initializePieces)
     const [turn, setTurn] = useState('white');
+    const [listOfPositions, setListOfPositions] = useState([piecesInPlay]);
+    const [gameOver, setGameOver] = useState(false);
     
     useEffect(()=>{
         console.log("rendered")
@@ -164,7 +166,7 @@ function Game(props){
         }
         else
         {
-            processMove(pieceType, pieceLocation, nearestDivKey, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion);
+            processMove(pieceType, pieceLocation, nearestDivKey, pieceCaptured, typeOfMove, alphabetArray, turn, piecesInPlay, moves, setTurn, setMoves, setPiecesInPlay, promotion, listOfPositions, setListOfPositions, setGameOver);
             return false;
         }
     }
@@ -191,27 +193,27 @@ function Game(props){
                 {
                     if(piece.type === 'Pawn')
                     {
-                        potentialPiece = <Pawn key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <Pawn key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                     else if(piece.type === 'Bishop')
                     {
-                        potentialPiece = <Bishop key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <Bishop key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                     else if(piece.type === 'Knight')
                     {
-                        potentialPiece = <Knight key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <Knight key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                     else if(piece.type === "Rook")
                     {
-                        potentialPiece = <Rook key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <Rook key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                     else if(piece.type === "Queen")
                     {
-                        potentialPiece = <Queen key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <Queen key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                     else if(piece.type === "King")
                     {
-                        potentialPiece = <King key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc}/>;
+                        potentialPiece = <King key={piece.key} moveMade={moveMade} color={piece.color} loc= {piece.loc} isGameOver = {gameOver}/>;
                     }
                 }
                }

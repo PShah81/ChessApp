@@ -9,15 +9,6 @@ function bishopMoveValidity(differenceX, differenceY, pieceLocationStart, pieceL
 
     if(Math.abs(differenceX) === Math.abs(differenceY))
     {
-        //in accordance with board where black is at the bottom and squares are loaded starting at the top left
-        if(pieceColor === "black")
-        {
-            differenceY *= -1
-        }
-        else if (pieceColor === "white")
-        {
-            differenceX *= -1
-        }
         let unitsX = differenceX / Math.abs(differenceX);
         let unitsY = differenceY / Math.abs(differenceY);
         for(let i=1; i<(Math.abs(differenceX) + 1); i++)

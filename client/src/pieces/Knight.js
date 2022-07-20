@@ -13,6 +13,10 @@ function Knight(props){
     }
     function handleMouseDown(e)
     {
+        if(props.isGameOver)
+        {
+            return;
+        }
         e.target.style.cursor = "grabbing";
         e.preventDefault();
         imgRef.current.style.zIndex = "2";
