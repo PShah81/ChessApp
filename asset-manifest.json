@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/ChessApp/static/css/main.e869d448.css",
+    "main.js": "/ChessApp/static/js/main.8ec5eecb.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/ChessApp/static/js/787.c4e7f8f9.chunk.js",
+    "static/media/BlackKing.png": "/ChessApp/static/media/BlackKing.0586a0cd79b0e7939a87.png",
+    "static/media/WhiteKing.png": "/ChessApp/static/media/WhiteKing.52e3c20f27c95b7c875c.png",
+    "static/media/WhiteQueen.png": "/ChessApp/static/media/WhiteQueen.4c8da4bd4d0403c6c5b3.png",
+    "static/media/BlackQueen.png": "/ChessApp/static/media/BlackQueen.cac803ecc1df0c889cb1.png",
+    "static/media/WhiteBishop.png": "/ChessApp/static/media/WhiteBishop.c3982b6fa935636c9c7d.png",
+    "static/media/BlackBishop.png": "/ChessApp/static/media/BlackBishop.55ad9524c3f21e995565.png",
+    "static/media/BlackKnight.png": "/ChessApp/static/media/BlackKnight.eafa12a42aaf4f9731fe.png",
+    "static/media/WhiteKnight.png": "/ChessApp/static/media/WhiteKnight.8fcc09536bf553e7f4b1.png",
+    "static/media/BlackPawn.png": "/ChessApp/static/media/BlackPawn.ea6125f13bbc5b7c8d14.png",
+    "static/media/WhitePawn.png": "/ChessApp/static/media/WhitePawn.13a438354553ffefee34.png",
+    "static/media/BlackRook.png": "/ChessApp/static/media/BlackRook.79aa1fa8d6e8a2db9678.png",
+    "static/media/WhiteRook.png": "/ChessApp/static/media/WhiteRook.732e44a8eb9c135eaab5.png",
+    "index.html": "/ChessApp/index.html",
+    "main.e869d448.css.map": "/ChessApp/static/css/main.e869d448.css.map",
+    "main.8ec5eecb.js.map": "/ChessApp/static/js/main.8ec5eecb.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/ChessApp/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e869d448.css",
+    "static/js/main.8ec5eecb.js"
+  ]
+}
